@@ -1,0 +1,7 @@
+2026-06-23 18:54:18,818 - pywebview - INFO - Starting debug app...
+2026-06-23 18:54:18,819 - pywebview - INFO - Window created successfully. Starting event loop...
+2026-06-23 18:54:19,373 - pywebview - DEBUG - Using WinForms / Chromium
+2026-06-23 18:54:20,703 - pywebview - DEBUG - before_load event fired. injecting pywebview object
+2026-06-23 18:54:20,704 - pywebview - DEBUG - Loading JS files from C:\Users\inlov\AppData\Roaming\Python\Python314\site-packages\webview\js
+2026-06-23 18:54:20,727 - pywebview - DEBUG - _pywebviewready event fired
+2026-06-23 18:54:20,730 - pywebview - DEBUG - loaded event fired

@@ -1,0 +1,82 @@
+{
+    "medtronic advisa": {
+        "device_name": "Medtronic Advisa DR MRI SureScan Pacemaker",
+        "manufacturer": "Medtronic",
+        "category": "Cardiac Pacemaker",
+        "safety_status": "MRI Conditional",
+        "field_strength": "1.5T and 3.0T",
+        "sar_limit": "Whole body SAR <= 2.0 W/kg (Normal Operating Mode)",
+        "spatial_gradient": "<= 20 T/m (2000 gauss/cm)",
+        "conditions": "1. SureScan mode must be programmed ON prior to the scan.\n2. No abandoned leads or lead fragments present.\n3. Active lead impedance must be within 200 to 1500 ohms.\n4. Patient must be monitored continuously (ECG or Pulse Oximetry).",
+        "fda_clearance": "P010031/S084 (Premarket Approval)",
+        "recalls_adverse_events": "No active recalls. 4 minor lead impedance fluctuations reported in MAUDE database (non-serious).",
+        "manual_link": "https://manuals.medtronic.com"
+    },
+    "st. jude medical ellipse": {
+        "device_name": "St. Jude Medical Ellipse ICD (Implantable Cardioverter Defibrillator)",
+        "manufacturer": "St. Jude Medical (Abbott)",
+        "category": "Defibrillator (ICD)",
+        "safety_status": "MRI Conditional",
+        "field_strength": "1.5T only",
+        "sar_limit": "Whole body SAR <= 2.0 W/kg",
+        "spatial_gradient": "<= 30 T/m (3000 gauss/cm)",
+        "conditions": "1. Device must be placed in MRI mode (tachyarrhythmia therapy programmed OFF).\n2. Patient must not have abandoned leads, adapters, or lead extenders.\n3. Minimum post-implant duration of 6 weeks required.",
+        "fda_clearance": "P030054/S252 (Premarket Approval)",
+        "recalls_adverse_events": "Recall in 2018 regarding battery depletion issues (resolved). Check patient serial number.",
+        "manual_link": "https://www.cardiovascular.abbott/us/en/hcp/products/cardiac-rhythm-management/icd.html"
+    },
+    "cochlear nucleus 7": {
+        "device_name": "Cochlear Nucleus 7 (CI500 & CI600 Series Implants)",
+        "manufacturer": "Cochlear Ltd",
+        "category": "Cochlear Implant",
+        "safety_status": "MRI Conditional",
+        "field_strength": "1.5T and 3.0T",
+        "sar_limit": "Head SAR <= 3.2 W/kg (or Whole body SAR <= 2.0 W/kg)",
+        "spatial_gradient": "<= 15 T/m (1500 gauss/cm)",
+        "conditions": "1. External sound processor MUST be removed prior to entering the MRI scanner room.\n2. Splint/bandage kit must be applied over the implant site for CI500 series at 3.0T to prevent magnet displacement.\n3. CI600 series is conditional at 1.5T/3.0T without magnet removal or splinting.",
+        "fda_clearance": "P970051/S178",
+        "recalls_adverse_events": "None active. Rare cases of demagnetization reported if splinting protocols were ignored.",
+        "manual_link": "https://www.cochlear.com/us/en/home/ongoing-care-and-support/nucleus-7-support"
+    },
+    "aneurx stent graft": {
+        "device_name": "AneuRx AAA Stent Graft System",
+        "manufacturer": "Medtronic Endovascular",
+        "category": "Endovascular Stent Graft",
+        "safety_status": "MRI Conditional",
+        "field_strength": "1.5T and 3.0T",
+        "sar_limit": "Whole body SAR <= 2.0 W/kg for 15 minutes of continuous scanning",
+        "spatial_gradient": "<= 30 T/m (3000 gauss/cm)",
+        "conditions": "1. Safe to scan immediately after implantation (no wait period required).\n2. Non-ferromagnetic nitinol/polyester construction.",
+        "fda_clearance": "P990026 (Premarket Approval)",
+        "recalls_adverse_events": "No active recalls. Historical migration events noted in early 2000s; verify graft position prior to scan.",
+        "manual_link": "https://www.medtronic.com/us-en/healthcare-professionals/products/cardiovascular/aortic-stent-grafts.html"
+    },
+    "star edwards valve": {
+        "device_name": "Starr-Edwards caged-ball heart valve (Model 6120/6000)",
+        "manufacturer": "Edwards Lifesciences",
+        "category": "Prosthetic Heart Valve",
+        "safety_status": "MRI Safe",
+        "field_strength": "Up to 3.0T",
+        "sar_limit": "No specific SAR limits (non-ferromagnetic clinical models)",
+        "spatial_gradient": "No spatial gradient limitations",
+        "conditions": "1. Models 6120 (mitral) and 6000 (aortic) are constructed of Stellite and titanium and are safe to scan.\n2. Note: Early caged-ball valves from the 1960s containing stainless steel (e.g. Model 1000) are MRI Unsafe. Confirm model number.",
+        "fda_clearance": "Pre-amendment device / PMA exempt",
+        "recalls_adverse_events": "None active.",
+        "manual_link": "https://www.edwards.com/devices/heart-valves"
+    },
+    "mirena": {
+        "device_name": "Mirena",
+        "manufacturer": "Unknown",
+        "category": "Medical Device",
+        "safety_status": "MRI Conditional",
+        "field_strength": "1.5T (Verify 3.0T in manual)",
+        "sar_limit": "Whole body SAR <= 2.0 W/kg (Verify in manual)",
+        "spatial_gradient": "Verify in manufacturer specifications",
+        "conditions": "1. Safety status and constraints must be verified in the official user manual.\n2. Ensure the patient's device model matches specifications prior to scan.",
+        "fda_clearance": "Auto-Ingested from Web Search",
+        "recalls_adverse_events": "No active recalls or adverse events extracted from safety manual corpus.",
+        "scraped_from": [
+            "duckduckgo.com"
+        ]
+    }
+}

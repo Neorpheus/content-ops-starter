@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - MRI Implant Safety Portal</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-base: #030712;
+            --bg-card: rgba(15, 23, 42, 0.45);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-blue: #3b82f6;
+            --status-unsafe: #ef4444;
+            --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-heavy: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.12) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(15, 23, 42, 0.6) 0px, transparent 50%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 440px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 36px;
+            box-shadow: var(--shadow-heavy);
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-blue);
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.15);
+        }
+
+        .title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            max-width: 280px;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+            margin-bottom: 16px;
+        }
+
+        label {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select {
+            width: 100%;
+            background: rgba(8, 10, 16, 0.55);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 14px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: var(--transition-smooth);
+            font-family: inherit;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        select option {
+            background-color: #0d1117;
+            color: #fff;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--accent-blue);
+            border: 1px solid var(--accent-blue);
+            border-radius: 10px;
+            padding: 12px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.25);
+            transition: var(--transition-smooth);
+            margin-top: 8px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .credentials-tip {
+            background: rgba(59, 130, 246, 0.04);
+            border: 1px dashed rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 12.5px;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            line-height: 1.4;
+        }
+
+        .credentials-tip strong {
+            color: var(--text-primary);
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 13px;
+            color: #fca5a5;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-error i {
+            color: var(--status-unsafe);
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="header">
+            <div class="logo-icon">
+                <i class="fa-solid fa-magnet"></i>
+            </div>
+            <h2 class="title">ImplantSafe</h2>
+            <p class="subtitle">AI MRI Safety Verification & Patient Clearance Registry</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert-error">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="/login" method="POST">
+            <div class="form-group">
+                <label for="clinician_name">Clinician Name</label>
+                <input type="text" id="clinician_name" name="clinician_name" placeholder="e.g. Dr. Sarah Jenkins" required value="Dr. Sarah Jenkins">
+            </div>
+
+            <div class="form-group">
+                <label for="role">Clinical Role / Title</label>
+                <select id="role" name="role" required>
+                    <option value="Lead Radiologist" selected>Lead Radiologist</option>
+                    <option value="MRI Safety Officer">MRI Safety Officer</option>
+                    <option value="MRI Technologist">MRI Technologist</option>
+                    <option value="Radiologist">Radiologist</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter username..." required autocomplete="username">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter password..." required autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class="fa-solid fa-right-to-bracket"></i> Clinician Sign In
+            </button>
+        </form>
+
+        <div class="credentials-tip">
+            <span><i class="fa-solid fa-key" style="color: var(--accent-blue); margin-right: 4px;"></i> <strong>Test Credentials:</strong></span>
+            <span>Username: <code style="color: #fff; background: rgba(255,255,255,0.06); padding: 1px 4px; border-radius: 4px;">clinician</code></span>
+            <span>Password: <code style="color: #fff; background: rgba(255,255,255,0.06); padding: 1px 4px; border-radius: 4px;">mrisafety2026</code></span>
+        </div>
+
+        <div class="credentials-tip" style="border-color: rgba(245, 158, 11, 0.2); background: rgba(245, 158, 11, 0.03); font-size: 11px; color: var(--text-secondary); gap: 6px;">
+            <span style="color: var(--status-conditional); font-weight: 700;"><i class="fa-solid fa-circle-exclamation"></i> FDA CDS & HIPAA REGULATORY NOTICE</span>
+            <span style="line-height: 1.4;">This system is classified as a Clinical Decision Support (CDS) aid under FD&C Act Section 520(o)(1)(E). Attending clinicians must independently review the source records to verify scanning safety constraints. Do not enter patient Protected Health Information (PHI) in text areas.</span>
+        </div>
+    </div>
+</body>
+</html>

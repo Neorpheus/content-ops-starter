@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MRI Implant Safety Agent - Clinical Workspace</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="workspace-container">
+        <!-- Control panel (Left) -->
+        <aside class="control-panel">
+            <div class="panel-header">
+                <div class="logo">
+                    <span class="logo-icon"><i class="fa-solid fa-magnet"></i></span>
+                    <div class="logo-text">
+                        <h1>ImplantSafe</h1>
+                        <span>AI MRI Safety Agent</span>
+                    </div>
+                </div>
+                <!-- Clinician Session Banner -->
+                <div class="clinician-session-banner">
+                    <div style="display: flex; align-items: center; gap: 10px; overflow: hidden; flex: 1;">
+                        <div class="clinician-avatar">
+                            <i class="fa-solid fa-user-doctor"></i>
+                        </div>
+                        <div class="clinician-info">
+                            <span class="clinician-name">{{ clinician_name }}</span>
+                            <span class="clinician-role">{{ role }}</span>
+                        </div>
+                    </div>
+                    <a href="/logout" class="btn-logout" title="Log Out Clinician">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <!-- Search Section -->
+                <div class="search-section">
+                    <div class="section-title">Query Safety Agent</div>
+                    <form id="search-form" autocomplete="off">
+                        <div class="search-box-container">
+                            <div class="search-box">
+                                <input type="text" id="search-input" placeholder="Type implant model/manufacturer..." required>
+                                <button type="submit" class="search-btn"><i class="fa-solid fa-microchip"></i></button>
+                            </div>
+                            <!-- Floating Suggestions Dropdown -->
+                            <div class="suggestions-dropdown" id="search-suggestions" style="display: none;"></div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Recent Searches Section -->
+                <div class="presets-section" id="recent-searches-section">
+                    <div class="section-title">Recent Searches</div>
+                    <div class="preset-list" id="recent-searches-list">
+                        <!-- Dynamically populated via client.js -->
+                    </div>
+                </div>
+
+                <!-- Database Registry Admin Actions -->
+                <div class="presets-section">
+                    <div class="section-title">Registry Database Admin</div>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <button class="preset-btn add-btn" id="toggle-add-device-btn" style="width: 100%; justify-content: center; gap: 8px; background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); color: var(--accent-blue);">
+                            <i class="fa-solid fa-plus"></i> Register Custom Implant
+                        </button>
+                        <div class="ingest-box-container" style="background: rgba(15, 23, 42, 0.3); border: 1px solid var(--border-color); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 8px;">
+                            <span style="font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;"><i class="fa-solid fa-earth-americas"></i> Web Auto-Ingest</span>
+                            <div style="display: flex; gap: 6px;">
+                                <input type="text" id="ingest-input" placeholder="Enter implant model..." style="flex: 1; background: rgba(8, 10, 16, 0.6); border: 1px solid var(--border-color); border-radius: 6px; padding: 6px 10px; color: #fff; font-size: 12px; outline: none; transition: var(--transition-smooth);">
+                                <button id="ingest-btn" style="background: var(--accent-blue); border: none; border-radius: 6px; color: #fff; padding: 6px 12px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; transition: var(--transition-smooth);"><i class="fa-solid fa-cloud-arrow-down"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Agent Execution Log -->
+                <div class="log-section">
+                    <div class="section-title">Agent Execution Log</div>
+                    <div class="agent-log-container" id="agent-log">
+                        <div class="log-placeholder">Waiting for implant query...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-footer" style="padding: 16px 20px;">
+                <div class="disclaimer-text" style="display: flex; flex-direction: column; gap: 6px; font-size: 11px; line-height: 1.4; color: var(--text-secondary);">
+                    <span style="color: var(--status-conditional); font-weight: 600;"><i class="fa-solid fa-shield-halved"></i> FDA CDS Compliance Statement</span>
+                    <span>This software is a Non-Device Clinical Decision Support (CDS) aid. The attending clinician maintains sole diagnostic responsibility. Review original FDA/manufacturer sources before clearance.</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Report panel (Right) -->
+        <main class="report-panel" id="print-area">
+            <header class="report-header">
+                <div class="report-title-block">
+                    <h2>Clinical Verification Report</h2>
+                    <div class="report-meta-row">
+                        <span class="report-id" id="report-id">ID: PENDING-AUTO-GEN</span>
+                        <span class="cache-badge" id="cache-badge" style="display: none;"><i class="fa-solid fa-database"></i> Serving from local cache</span>
+                        <span class="api-status-badge live" id="api-status-badge"><i class="fa-solid fa-circle-check"></i> FDA Connection: Live</span>
+                    </div>
+                </div>
+                <div class="report-status-badge pending" id="status-badge">
+                    <i class="fa-solid fa-clock"></i> PENDING CLINICAL REVIEW
+                </div>
+            </header>
+
+            <div class="report-content" id="report-view-default">
+                <div class="empty-report-card">
+                    <i class="fa-solid fa-stethoscope"></i>
+                    <h3>Implant Safety Workspace</h3>
+                    <p>Enter a patient's bodily implant model or select a preset to trigger the AI verification agent.</p>
+                </div>
+            </div>
+
+            <!-- Dynamic Report Layout (Initially Hidden) -->
+            <div class="report-content" id="report-view-active" style="display: none;">
+                <!-- Safety Class Header Card -->
+                <div class="safety-class-card" id="safety-card">
+                    <div class="safety-icon-wrapper" id="safety-icon-div">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div class="safety-text-wrapper">
+                        <h4 id="safety-title">MRI Conditional</h4>
+                        <p id="safety-desc">Requires specific scan environment and safety constraints.</p>
+                    </div>
+                </div>
+
+                <!-- FDA CDS Regulatory Banner -->
+                <div class="compliance-banner cds-disclosure-banner">
+                    <div class="compliance-banner-icon"><i class="fa-solid fa-circle-info"></i></div>
+                    <div class="compliance-banner-content">
+                        <strong>FDA Non-Device CDS Clinical Notice:</strong> This report is a compiled recommendation based on FDA registration databases and manufacturer manuals. It does not replace the requirement for direct clinician verification. Attending healthcare professionals must review the source records below and confirm safety parameters before clearing the patient.
+                    </div>
+                </div>
+
+                <!-- Auto-Ingest Suggestion Prompt Card (Initially Hidden) -->
+                <div id="fallback-ingest-prompt" style="display: none; background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.02) 100%); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 12px; padding: 16px; margin: 10px 0; align-items: center; justify-content: space-between; gap: 16px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="background: rgba(59, 130, 246, 0.1); color: var(--accent-blue); border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                            <i class="fa-solid fa-earth-americas"></i>
+                        </div>
+                        <div>
+                            <h5 style="color: #fff; font-size: 13px; font-weight: 700; margin: 0;">Crawl Manufacturer Manuals</h5>
+                            <p style="color: var(--text-secondary); font-size: 11.5px; margin: 2px 0 0 0;">No official record found. Let the agent crawl manufacturer sites and auto-ingest specifications.</p>
+                        </div>
+                    </div>
+                    <button id="trigger-fallback-ingest-btn" style="background: var(--accent-blue); border: none; border-radius: 8px; color: #fff; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: var(--transition-smooth); box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);"><i class="fa-solid fa-cloud-arrow-down"></i> Auto-Ingest Specs</button>
+                </div>
+
+                <!-- Device Information Grid -->
+                <div class="report-section">
+                    <div class="report-section-title" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <span>Device Specifications</span>
+                        <button id="delete-listing-btn" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--status-unsafe); font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s;">
+                            <i class="fa-solid fa-trash-can"></i> Remove Listing
+                        </button>
+                    </div>
+                    <div class="device-info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Device Name</span>
+                            <span class="info-val" id="dev-name">Medtronic Advisa DR MRI SureScan</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Manufacturer</span>
+                            <span class="info-val" id="dev-manufacturer">Medtronic</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Implant Category</span>
+                            <span class="info-val" id="dev-category">Cardiac Pacemaker</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">FDA Clearance Record</span>
+                            <span class="info-val" id="dev-fda">P010031/S084</span>
+                        </div>
+                        <div class="info-item" style="grid-column: span 2;">
+                            <span class="info-label">Manufacturer Manual Link (Manual Verification)</span>
+                            <span class="info-val">
+                                <a href="#" id="manual-verification-anchor" target="_blank" style="color: var(--accent-blue); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-weight: 600;">
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Manufacturer Verification Manual
+                                </a>
+                            </span>
+                        </div>
+                        <div class="info-item" style="grid-column: span 2; display: flex; flex-direction: row; align-items: center; gap: 8px; border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 4px;">
+                            <span class="info-label" style="text-transform: uppercase; font-size: 11px; font-weight: 600; color: var(--text-secondary);"><i class="fa-solid fa-code-fork"></i> Ingestion Sources:</span>
+                            <div id="source-badge-row" style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                <!-- Badges will be appended here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scanning Parameters Grid -->
+                <div class="report-section">
+                    <div class="report-section-title">Mandatory Scanning Constraints</div>
+                    <div class="constraints-grid">
+                        <div class="constraint-card">
+                            <i class="fa-solid fa-gauge-high"></i>
+                            <div class="card-text">
+                                <span class="card-label">Magnetic Field Strength</span>
+                                <span class="card-val" id="const-field">1.5T and 3.0T</span>
+                            </div>
+                        </div>
+                        <div class="constraint-card">
+                            <i class="fa-solid fa-fire-flame-curved"></i>
+                            <div class="card-text">
+                                <span class="card-label">Max SAR Limit</span>
+                                <span class="card-val" id="const-sar">Whole body SAR <= 2.0 W/kg</span>
+                            </div>
+                        </div>
+                        <div class="constraint-card">
+                            <i class="fa-solid fa-lines-leaning"></i>
+                            <div class="card-text">
+                                <span class="card-label">Max Spatial Gradient</span>
+                                <span class="card-val" id="const-gradient"><= 20 T/m (2000 G/cm)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conditions list -->
+                <div class="report-section">
+                    <div class="report-section-title">Operational Pre-conditions</div>
+                    <div class="conditions-box">
+                        <ul id="conditions-list">
+                            <li>SureScan mode must be programmed ON prior to entering the scanner room.</li>
+                            <li>Verify no abandoned leads or lead fragments exist.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Adverse events and recalls -->
+                <div class="report-section">
+                    <div class="report-section-title">FDA Adverse Events & Safety Alerts</div>
+                    <div class="alerts-box">
+                        <p id="recalls-text">No active recalls. 4 minor lead impedance fluctuations reported in MAUDE database.</p>
+                    </div>
+                </div>
+
+                <!-- Compiled FDA Dossier Section -->
+                <div class="report-section" id="dossier-section" style="display: none;">
+                    <div class="report-section-title">FDA Official Registry Dossier</div>
+                    <div class="dossier-container">
+                        <div class="dossier-tabs">
+                            <button class="tab-btn active" data-tab="tab-udi">UDI Registry (<span id="count-udi">0</span>)</button>
+                            <button class="tab-btn" data-tab="tab-pma">PMA Approvals (<span id="count-pma">0</span>)</button>
+                            <button class="tab-btn" data-tab="tab-510k">510(k) Clearances (<span id="count-510k">0</span>)</button>
+                            <button class="tab-btn" data-tab="tab-denovo">De Novo (<span id="count-denovo">0</span>)</button>
+                            <button class="tab-btn" data-tab="tab-recalls">Recalls (<span id="count-recalls">0</span>)</button>
+                            <button class="tab-btn" data-tab="tab-events">Adverse Events (<span id="count-events">0</span>)</button>
+                        </div>
+                        <div class="dossier-content-wrapper">
+                            <!-- UDI Tab -->
+                            <div class="tab-content active" id="tab-udi">
+                                <div class="table-responsive">
+                                    <table class="dossier-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Brand Name</th>
+                                                <th>Company</th>
+                                                <th>MRI Safety Status</th>
+                                                <th>Catalog # / Desc</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="udi-table-body"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- PMA Tab -->
+                            <div class="tab-content" id="tab-pma">
+                                <ul class="dossier-list" id="pma-list"></ul>
+                            </div>
+                            <!-- 510(k) Tab -->
+                            <div class="tab-content" id="tab-510k">
+                                <ul class="dossier-list" id="510k-list"></ul>
+                            </div>
+                            <!-- De Novo Tab -->
+                            <div class="tab-content" id="tab-denovo">
+                                <ul class="dossier-list" id="denovo-list"></ul>
+                            </div>
+                            <!-- Recalls Tab -->
+                            <div class="tab-content" id="tab-recalls">
+                                <ul class="dossier-list" id="recalls-list"></ul>
+                            </div>
+                            <!-- Events Tab -->
+                            <div class="tab-content" id="tab-events">
+                                <ul class="dossier-list" id="events-list"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Verified Reference Links -->
+                <div class="report-section" id="ref-links-section" style="display: none;">
+                    <div class="report-section-title">Verified Manufacturer Reference Sources</div>
+                    <div class="reference-links-box" id="reference-links">
+                        <!-- Links will be appended here -->
+                    </div>
+                </div>
+
+                <!-- Human Approval Box -->
+                <div class="report-section approval-section" id="approval-box">
+                    <div class="report-section-title">Clinical Approval & Sign-Off</div>
+                    <form id="approval-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="reviewer-name">Reviewer Full Name</label>
+                                <input type="text" id="reviewer-name" placeholder="e.g. Dr. Sarah Jenkins" value="{{ clinician_name }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="reviewer-title">Reviewer Title / Role</label>
+                                <input type="text" id="reviewer-title" placeholder="e.g. Lead Radiologist / MRI Safety Officer" value="{{ role }}" required>
+                            </div>
+                        </div>
+                        
+                        <!-- Interactive Clinical Safety Checklist -->
+                        <div class="form-group">
+                            <label class="checklist-title"><i class="fa-solid fa-clipboard-list"></i> Mandatory Scanning Safety Checklist</label>
+                            <p class="checklist-desc">Clinician must confirm compliance with each safety constraint below to unlock the approval button:</p>
+                            <div class="checklist-box" id="clinical-checklist">
+                                <!-- Checkboxes will be dynamically rendered here -->
+                            </div>
+                        </div>
+
+                        <!-- 21 CFR Part 11 Legal Confirmation Checkbox -->
+                        <div class="form-group legal-intent-group">
+                            <label class="legal-intent-label">
+                                <input type="checkbox" id="legal-signature-intent" class="checklist-cb" required>
+                                <span>I intend this clearance sign-off to be my legally binding signature under FDA Title 21 CFR Part 11.</span>
+                            </label>
+                        </div>
+
+                        <!-- HIPAA PHI Warning Banner -->
+                        <div class="compliance-banner hipaa-warning-banner">
+                            <div class="compliance-banner-icon"><i class="fa-solid fa-lock"></i></div>
+                            <div class="compliance-banner-content">
+                                <strong>HIPAA Security Standard:</strong> Do NOT enter patient names, MRNs, dates, or other Protected Health Information (PHI) in clinical notes. Log technical adjustments only.
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="clinical-notes">Clinical Clearance Notes & Protocol Adjustments</label>
+                            <textarea id="clinical-notes" placeholder="e.g. Pacemaker programmed to MRI mode by cardiology. Scan limited to 1.5T. Patient monitoring on pulse oximeter." required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reviewer-password">Confirm E-Signature Password *</label>
+                            <input type="password" id="reviewer-password" placeholder="Enter clinical password to execute electronic signature..." required style="background: rgba(15,23,42,0.4); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 13.5px; outline: none; margin-top: 4px;">
+                        </div>
+
+                        <div class="approval-action-row">
+                            <button type="submit" class="approve-btn" id="approve-btn" disabled>
+                                <i class="fa-solid fa-signature"></i> Digitally Approve & Clear Patient
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Approved Signature Stamp -->
+                    <div class="signature-stamp-card" id="signature-stamp" style="display: none;">
+                        <div class="stamp-icon"><i class="fa-solid fa-stamp"></i></div>
+                        <div class="stamp-details">
+                            <h5>CLINICALLY CLEARED FOR MRI SCANNING</h5>
+                            <p><strong>Approved By:</strong> <span id="stamp-name">Dr. Sarah Jenkins</span> (<span id="stamp-title">Lead Radiologist</span>)</p>
+                            <p><strong>Clinical Notes:</strong> <span id="stamp-notes">Notes...</span></p>
+                            <p class="stamp-meta"><strong>Cleared Timestamp:</strong> <span id="stamp-time">2026-06-23 18:45:00</span> | <strong>Verification Source:</strong> <span id="stamp-source">AI-FDA-Agent</span></p>
+                            <p class="stamp-meta"><strong>Audit Signature Hash:</strong> <code class="audit-hash" id="stamp-hash">sha256-hash-value</code></p>
+                            <p class="stamp-meta"><strong>Database Source Integrity:</strong> <span id="stamp-cache-status">Live Verification</span></p>
+                        </div>
+                        <button class="print-report-btn" id="print-btn"><i class="fa-solid fa-print"></i> Print Clearance Form</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Disambiguation Panel (Initially Hidden) -->
+            <div class="report-content" id="report-view-disambiguation" style="display: none; flex-direction: column; gap: 24px;">
+                <div class="safety-class-card" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.03) 100%); border: 1px solid var(--accent-blue);">
+                    <div class="safety-icon-wrapper" style="background: rgba(59, 130, 246, 0.1); color: var(--accent-blue); font-size: 24px;">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                    <div class="safety-text-wrapper">
+                        <h4 style="color: var(--accent-blue); font-size: 17px; font-weight: 700; text-transform: uppercase;">Select Correct Implant Model</h4>
+                        <p style="font-size: 13px; color: var(--text-secondary);">Multiple potential matches or spelling variations were found in our catalog and live FDA registries. Choose the exact implant to view its safety constraints:</p>
+                    </div>
+                </div>
+
+                <div class="report-section">
+                    <div class="report-section-title" id="disambiguate-title-query">Matching Candidates for "Query"</div>
+                    <div class="disambiguation-list" id="disambiguation-list" style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px;">
+                        <!-- Match Option Cards will be dynamically loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manual Add Implant Form Layout (Initially Hidden) -->
+            <div class="report-content" id="report-view-add-implant" style="display: none;">
+                <div class="safety-class-card" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.03) 100%); border: 1px solid var(--accent-blue);">
+                    <div class="safety-icon-wrapper" style="background: rgba(59, 130, 246, 0.1); color: var(--accent-blue); font-size: 24px;">
+                        <i class="fa-solid fa-folder-plus"></i>
+                    </div>
+                    <div class="safety-text-wrapper">
+                        <h4 style="color: var(--accent-blue); font-size: 17px; font-weight: 700; text-transform: uppercase;">Register New Bodily Implant</h4>
+                        <p style="font-size: 13px; color: var(--text-secondary);">Manually log device specs, MRI safety classifications, and pre-conditions directly to the persistent registry.</p>
+                    </div>
+                </div>
+
+                <form id="add-implant-form" autocomplete="off" style="display: flex; flex-direction: column; gap: 24px;">
+                    <!-- Specifications Block -->
+                    <div class="report-section">
+                        <div class="report-section-title">Device Specifications</div>
+                        <div class="device-info-grid" style="grid-template-columns: repeat(2, 1fr); gap: 16px;">
+                            <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                <label for="add-dev-name" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Device Name / Model *</label>
+                                <input type="text" id="add-dev-name" placeholder="e.g. Medtronic Micra Leadless Pacemaker" required style="background: rgba(15,23,42,0.4); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 13.5px; outline: none; transition: var(--transition-smooth);">
+                            </div>
+                            <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                <label for="add-dev-manufacturer" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Manufacturer</label>
+                                <input type="text" id="add-dev-manufacturer" placeholder="e.g. Medtronic" style="background: rgba(15,23,42,0.4); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 13.5px; outline: none; transition: var(--transition-smooth);">
+                            </div>
+                            <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                <label for="add-dev-category" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Implant Category</label>
+                                <input type="text" id="add-dev-category" placeholder="e.g. Cardiac Pacemaker" style="background: rgba(15,23,42,0.4); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 13.5px; outline: none; transition: var(--transition-smooth);">
+                            </div>
+                            <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                <label for="add-dev-fda" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">FDA Clearance Record</label>
+                                <input type="text" id="add-dev-fda" placeholder="e.g. P150033 / PMA Approved" style="background: rgba(15,23,42,0.4); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 13.5px; outline: none; transition: var(--transition-smooth);">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Safety Classification -->
+                    <div class="report-section">
+                        <div class="report-section-title">MRI Safety Classification</div>
+                        <div class="device-info-grid" style="grid-template-columns: 1fr; padding: 16px 20px;">
+                            <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                <label for="add-dev-safety" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Safety Classification Status *</label>
+                                <select id="add-dev-safety" required style="background: rgba(15,23,42,0.4); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 13.5px; outline: none; cursor: pointer;">
+                                    <option value="" disabled selected>Select Safety Status</option>
+                                    <option value="MRI Safe">MRI Safe</option>
+                                    <option value="MRI Conditional">MRI Conditional</option>
+                                    <option value="MRI Unsafe">MRI Unsafe</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scanning Constraints -->
+                    <div class="report-section">
+                        <div class="report-section-title">Mandatory Scanning Constraints</div>
+                        <div class="device-info-grid" style="grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                            <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                <label for="add-const-field" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Magnetic Field Strength</label>
+                                <input type="text" id="add-const-field" placeholder="e.g. 1.5T and 3.0T" style="background: rgba(15,23,42,0.4); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 13.5px; outline: none;">
+                            </div>
+                            <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                <label for="add-const-sar" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Max SAR Limit</label>
+                                <input type="text" id="add-const-sar" placeholder="e.g. Whole body SAR <= 2.0 W/kg" style="background: rgba(15,23,42,0.4); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 13.5px; outline: none;">
+                            </div>
+                            <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                <label for="add-const-gradient" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Max Spatial Gradient</label>
+                                <input type="text" id="add-const-gradient" placeholder="e.g. <= 20 T/m (2000 G/cm)" style="background: rgba(15,23,42,0.4); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 13.5px; outline: none;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Operational Pre-conditions -->
+                    <div class="report-section">
+                        <div class="report-section-title">Operational Pre-conditions</div>
+                        <div class="device-info-grid" style="grid-template-columns: 1fr;">
+                            <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                <label for="add-conditions" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Scanning Requirements Checklist (one condition per line)</label>
+                                <textarea id="add-conditions" rows="4" placeholder="e.g.&#10;1. Program device to SureScan mode before scanning.&#10;2. Verify no abandoned leads are present." style="background: rgba(15,23,42,0.4); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 13.5px; font-family: inherit; outline: none; resize: vertical;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recalls and Adverse Events -->
+                    <div class="report-section">
+                        <div class="report-section-title">FDA Adverse Events & Recalls</div>
+                        <div class="device-info-grid" style="grid-template-columns: 1fr;">
+                            <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                <label for="add-alerts" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Known Recalls / MAUDE Event Reports</label>
+                                <textarea id="add-alerts" rows="2" placeholder="e.g. No active recalls or adverse events." style="background: rgba(15,23,42,0.4); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 13.5px; font-family: inherit; outline: none; resize: vertical;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="approval-action-row" style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px;">
+                        <button type="button" class="approve-btn" id="cancel-add-device-btn" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: var(--status-unsafe);">
+                            <i class="fa-solid fa-xmark"></i> Cancel & Return
+                        </button>
+                        <button type="submit" class="approve-btn" style="background: var(--status-safe); border-color: var(--status-safe); color: #fff;">
+                            <i class="fa-solid fa-floppy-disk"></i> Save Implant to Registry
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- Delete Confirmation Modal (Initially Hidden) -->
+    <div id="delete-confirm-modal" class="modal-backdrop" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="modal-content" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 28px; width: 450px; display: flex; flex-direction: column; gap: 20px; box-shadow: var(--shadow-heavy);">
+            <div style="display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 14px;">
+                <div style="background: rgba(239, 68, 68, 0.1); color: var(--status-unsafe); border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <h4 style="margin: 0; font-size: 16px; font-weight: 700; color: #fff; text-transform: uppercase;">Confirm Registry Deletion</h4>
+            </div>
+            <p style="margin: 0; font-size: 13.5px; color: var(--text-secondary); line-height: 1.5;">
+                You are about to permanently remove the implant <strong id="delete-device-name-display" style="color: #fff;">[Device]</strong> from the persistent safety registry. This action is irreversible and requires clinical sign-off.
+            </p>
+            
+            <form id="delete-signoff-form" autocomplete="off" style="display: flex; flex-direction: column; gap: 16px;">
+                <div class="form-row" style="display: flex; gap: 12px;">
+                    <div class="form-group" style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+                        <label for="delete-reviewer-name" style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Your Full Name *</label>
+                        <input type="text" id="delete-reviewer-name" required placeholder="e.g. Dr. Sarah Jenkins" value="{{ clinician_name }}" style="background: rgba(15,23,42,0.4); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 10px; color: #fff; font-size: 13px; outline: none;">
+                    </div>
+                    <div class="form-group" style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+                        <label for="delete-reviewer-title" style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Your Title / Role *</label>
+                        <input type="text" id="delete-reviewer-title" required placeholder="e.g. Lead Radiologist" value="{{ role }}" style="background: rgba(15,23,42,0.4); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 10px; color: #fff; font-size: 13px; outline: none;">
+                    </div>
+                </div>
+                
+                <!-- HIPAA PHI Warning Banner (Delete) -->
+                <div class="compliance-banner hipaa-warning-banner" style="margin-top: 4px; padding: 8px 12px;">
+                    <div class="compliance-banner-icon"><i class="fa-solid fa-lock" style="font-size: 12px;"></i></div>
+                    <div class="compliance-banner-content" style="font-size: 11px;">
+                        <strong>HIPAA Security Notice:</strong> Do NOT enter patient PHI in the reason field.
+                    </div>
+                </div>
+
+                <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                    <label for="delete-notes" style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Reason for Removal *</label>
+                    <textarea id="delete-notes" required placeholder="e.g. Erroneous listing; safety constraints were updated in 2026 manual." rows="2" style="background: rgba(15,23,42,0.4); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 10px; color: #fff; font-size: 13px; outline: none; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+                
+                <div class="form-group legal-intent-group" style="margin-top: 4px;">
+                    <label class="legal-intent-label" style="display: flex; gap: 8px; align-items: flex-start; cursor: pointer; font-size: 12px; color: var(--text-secondary);">
+                        <input type="checkbox" id="delete-legal-signature-intent" required style="margin-top: 2px;">
+                        <span>I intend this action to be my legally binding signature under FDA Title 21 CFR Part 11.</span>
+                    </label>
+                </div>
+
+                <div class="form-group" style="display: flex; flex-direction: column; gap: 6px; margin-top: 4px;">
+                    <label for="delete-password" style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Confirm E-Signature Password *</label>
+                    <input type="password" id="delete-password" required placeholder="Enter clinical password to execute removal signature..." style="background: rgba(15,23,42,0.4); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 10px; color: #fff; font-size: 13px; outline: none;">
+                </div>
+                
+                <div class="approval-action-row" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+                    <button type="button" class="approve-btn" id="close-delete-modal-btn" style="background: rgba(255,255,255,0.05); border-color: var(--border-color); color: var(--text-secondary); padding: 8px 14px; font-size: 12.5px;">
+                        <i class="fa-solid fa-xmark"></i> Cancel
+                    </button>
+                    <button type="submit" class="approve-btn" style="background: var(--status-unsafe); border-color: var(--status-unsafe); color: #fff; padding: 8px 14px; font-size: 12.5px;">
+                        <i class="fa-solid fa-trash-can"></i> Permanently Delete
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/client.js"></script>
+</body>
+</html>
