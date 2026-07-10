@@ -10,7 +10,10 @@ from functools import wraps
 from flask import Flask, request, jsonify, render_template, session, redirect, url_for, flash
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
-app.secret_key = 'super_secret_clinical_key_2026'
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'super_secret_clinical_key_2026')
+
+CLINICIAN_USER = os.environ.get('CLINICIAN_USERNAME', 'clinician')
+CLINICIAN_PASS = os.environ.get('CLINICIAN_PASSWORD', 'mrisafety2026')
 
 def login_required(f):
     @wraps(f)
@@ -343,7 +346,7 @@ def login():
         clinician_name = request.form.get('clinician_name', 'Dr. Sarah Jenkins').strip()
         role = request.form.get('role', 'Lead Radiologist').strip()
         
-        if username == 'clinician' and password == 'mrisafety2026':
+        if username == CLINICIAN_USER and password == CLINICIAN_PASS:
             session['logged_in'] = True
             session['username'] = username
             session['clinician_name'] = clinician_name if clinician_name else 'Dr. Sarah Jenkins'
@@ -715,7 +718,7 @@ def approve_report():
     if not password:
         return jsonify({"error": "Validation Error: Confirmation password is required for electronic signature."}), 400
         
-    if password != "mrisafety2026":
+    if password != CLINICIAN_PASS:
         return jsonify({"error": "Authentication Error: Incorrect clinical password. Signature execution rejected."}), 401
         
     if legal_confirm is not True:
@@ -1110,7 +1113,7 @@ def remove_implant():
         return jsonify({"error": "Clinical signature parameters are incomplete."}), 400
     if not password:
         return jsonify({"error": "Validation Error: Confirmation password is required for electronic signature."}), 400
-    if password != "mrisafety2026":
+    if password != CLINICIAN_PASS:
         return jsonify({"error": "Authentication Error: Incorrect clinical password. Removal authorization rejected."}), 401
     if not legal_confirm:
         return jsonify({"error": "FDA 21 CFR Part 11 binding electronic signature intent must be checked."}), 400
